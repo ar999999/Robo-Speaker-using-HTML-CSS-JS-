@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> Robo Speaker -By Athrav Rajmane </title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #1b1f27;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #2c2f3a;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      resize: none;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .controls label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .controls input, .controls select {
+      width: 100%;
+      padding: 5px;
+      font-size: 16px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0097a7;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 13px;
+      margin-top: -8px;
+      margin-bottom: 10px;
+      color: #aaa;
+    }
+
+    .warning {
+      font-size: 12px;
+      color: #f9a825;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1> Robo Speaker Made for Fun </h1>
+
+    <textarea id="text" placeholder="Type something..."></textarea>
+    <div class="char-count" id="charCount">0 characters</div>
+
+    <div class="controls">
+      <label for="voiceSelect">Select Voice</label>
+      <select id="voiceSelect"></select>
+
+      <label for="rate">Rate (1 is normal)</label>
+      <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
+
+      <label for="pitch">Pitch (1 is normal)</label>
+      <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
+    </div>
+
+    <button onclick="speakText()">🔊 Speak</button>
+
+    <div class="warning">
+      :-)  This project is made for fun and Increase interest with coding and Development @Athrav Rajmane </div>
+  </div>
+
+  <script>
+    const textInput = document.getElementById('text');
+    const charCount = document.getElementById('charCount');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rateInput = document.getElementById('rate');
+    const pitchInput = document.getElementById('pitch');
+
+    let voices = [];
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+
+      voiceSelect.innerHTML = "";
+      voices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' [Default]' : ''}`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    // Load voices
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    function speakText() {
+      const text = textInput.value;
+      if (!text.trim()) {
+        alert("Please enter some text!");
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedVoice = voices[voiceSelect.value];
+      utterance.voice = selectedVoice;
+      utterance.rate = parseFloat(rateInput.value);
+      utterance.pitch = parseFloat(pitchInput.value);
+
+      speechSynthesis.cancel(); // cancel previous
+      speechSynthesis.speak(utterance);
+    }
+
+    // Update character count
+    textInput.addEventListener('input', () => {
+      charCount.textContent = `${textInput.value.length} characters`;
+    });
+  </script>
+</body>
+</html>
